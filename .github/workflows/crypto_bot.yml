@@ -1,0 +1,47 @@
+name: Crypto Research Bot
+
+on:
+  schedule:
+    # 对应北京时间: 08:30, 12:30, 18:30, 22:30
+    - cron: '30 0,4,10,14 * * *'
+
+  # 允许手动点击 "Run workflow" 按钮触发（方便测试）
+  workflow_dispatch:
+
+jobs:
+  analyze-and-report:
+    runs-on: ubuntu-latest
+
+    # 设置超时时间，防止脚本卡死消耗额度
+    timeout-minutes: 10
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10' # 使用 3.10 避免 google 库报错
+        cache: 'pip'
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Bot
+      env:
+        # 从 GitHub Secrets 读取密钥
+        TG_API_ID: ${{ secrets.TG_API_ID }}
+        TG_API_HASH: ${{ secrets.TG_API_HASH }}
+        TG_SESSION_STRING: ${{ secrets.TG_SESSION_STRING }}
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        WECHAT_WEBHOOK: ${{ secrets.WECHAT_WEBHOOK }}
+
+        # 强制关闭 Mock 模式，使用真实数据
+        USE_MOCK_DATA: false
+        # 标记当前在 GitHub 运行 (代码里会自动禁用代理)
+        GITHUB_ACTIONS: true
+
+      run: python main.py
