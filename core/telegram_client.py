@@ -3,7 +3,7 @@ from telethon import TelegramClient
 from telethon.sessions import StringSession
 from datetime import datetime, timedelta, timezone
 # 引入配置
-from config.settings import API_ID, API_HASH, SESSION_STRING, PROXY_URL, USE_MOCK_DATA
+from config.settings import TG_API_ID, TG_API_HASH, TG_SESSION_STRING, PROXY_URL, USE_MOCK_DATA
 
 
 class TgScraper:
@@ -24,9 +24,9 @@ class TgScraper:
 
             try:
                 self.client = TelegramClient(
-                    StringSession(SESSION_STRING),
-                    API_ID,
-                    API_HASH,
+                    StringSession(TG_SESSION_STRING),
+                    TG_API_ID,
+                    TG_API_HASH,
                     proxy=proxy_args
                 )
             except Exception as e:
